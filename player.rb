@@ -1,34 +1,50 @@
 class Player
-    attr_accessor :points, :name, :hand, :bank
+  attr_accessor :points, :bank, :hand, :name
 
-    START_BANK = 100
-    BET = 10
+  START_BANK = 100
+  BET = 10
 
-    def initiliaze(name)
-        @name = name
-        bank = @START_BANK
-        @points = 0
-        hand = []
-    end
+  def initialize(name)
+    @name = name
+    @points = 0
+    @bank = START_BANK
+    @hand = []
+  end
 
-    def get_card(card)
-        @hand << card
-        @score += card_value(card, @score)
+  def show_hand
+    hand.each do |card|
+      print "#{card.rank}#{card.suite} "
     end
-    
-    def card_value(card, local_score)
-       if card.name == 'Ace' && local_score >= 11
-          1
-       else
-          card.value
-        end
-    end
-    
-    def show_cards_in_hand
-      local_score = 0
-      @hand.each do |card|
-        card.card_info(local_score)
-        local_score += card_value(card, local_score)
+  end
+
+  def place_bet
+    @bank -= BET
+  end
+
+  def count_points
+    @points = 0
+    @ace_sum = 0
+    @ace_counts = 0
+
+    @hand.each do |card|
+      if ace?(card)
+        @ace_counts += 1
+        @ace_sum += 11
       end
+      @points += card.value
     end
+    @points = @points - @ace_sum + @ace_counts if busted?
+  end
+
+  def bet
+    BET
+  end
+
+  def busted?
+    @points > 21
+  end
+
+  def ace?(card)
+    card.rank == 'a'
+  end
 end
